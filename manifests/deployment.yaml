@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: udp-server
+  labels:
+    app: udp-server
+spec:
+  selector:
+    matchLabels:
+      app: udp-server 
+  template:
+    metadata:
+      labels:
+        app: udp-server
+    spec:
+      containers:
+      - name: udp-server 
+        image: udp-server:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        - name: app
+          containerPort: 25001
+          protocol: UDP
+        resources:
+          requests:
+            cpu: 250m
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /health/
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+
