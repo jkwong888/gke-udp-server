@@ -28,7 +28,7 @@ jobs:
         uses: 'google-github-actions/auth@v0'
         with:
           workload_identity_provider: projects/801352177098/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions
-          service_account: github-actions@jkwng-gitlab.iam.gserviceaccount.com'
+          service_account: github-actions@jkwng-gitlab.iam.gserviceaccount.com
 
       # This example uses the docker login action
       - uses: 'docker/login-action@v1'
