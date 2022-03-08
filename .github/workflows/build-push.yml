@@ -63,8 +63,13 @@ jobs:
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
       
-      - name: yq
+      - name: update manifests
         shell: bash
         run: |
           yq w -i manifests/kustomization.yaml 'images(name==udp-server).newTag' ${{ steps.docker_build.outputs.digest }}
           cat manifests/kustomization.yaml
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add manifests/kustomization.yaml
+          git commit -m "update image tag"
+          git push 
