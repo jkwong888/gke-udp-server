@@ -6,4 +6,4 @@ resources:
 images:
   - name: udp-server
     newName: gcr.io/jkwng-images/udp-server
-    newTag: sha256:3abc0ae4ed86c82b0da0a8c80250895b0aabc62323f88797df70cf3329792056
+    digest: sha256:cbcf056e2e0f29098a53eabb257a005c1ebc307e699d9d751cd9edb8d505466a
