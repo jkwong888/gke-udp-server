@@ -45,11 +45,8 @@ jobs:
           username: 'oauth2accesstoken'
           password: '${{ steps.auth.outputs.access_token }}'
 
-      - uses: vmware-tanzu/carvel-setup-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - run: |
-          ytt version
+      - name: set up yq
+        uses: chrisdickinson/setup-yq@latest
 
       - id: docker_build
         name: Build image and push to Docker Hub and GitHub Container Registry
@@ -66,18 +63,8 @@ jobs:
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
       
-      - name: ytt
+      - name: yq
         shell: bash
         run: |
-          cat <<EOF > manifests/overlay.yml
-          #@ load("@ytt:overlay", "overlay")
-
-          #@overlay/match by=overlay.subset({"kind": "Kustomization"}), expects="1+"
-          ---
-          images:
-
-          #@overlay/match by="name"
-          - name: udp-server
-            newTag: ${{ steps.docker_build.outputs.digest }}
-          EOF
-          ytt -f manifests
+          yq w -i manifests/kustomization.yaml 'images(name==udp-server).newTag' ${{ steps.docker_build.outputs.digest }}
+          cat manifests/kustomization.yaml
