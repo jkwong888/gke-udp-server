@@ -4,6 +4,8 @@ on:
   # run it on push to the default repository branch
   push:
     branches: [main]
+      paths-ignore:
+      - 'manifests/**'
   # run it during pull request
   pull_request:
 
@@ -43,6 +45,11 @@ jobs:
           username: 'oauth2accesstoken'
           password: '${{ steps.auth.outputs.access_token }}'
 
+      - uses: vmware-tanzu/carvel-setup-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          ytt version
 
       - name: Build image and push to Docker Hub and GitHub Container Registry
         uses: docker/build-push-action@v2
@@ -57,3 +64,19 @@ jobs:
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
+      
+      - name: ytt
+        shell: bash
+        run: |
+          cat <<EOF > manifests/overlay.yml
+          #@ load("@ytt:overlay", "overlay")
+
+          #@overlay/match by=overlay.subset({"kind": "Kustomization"}), expects="1+"
+          ---
+          images:
+
+          #@overlay/match by="name"
+          - name: udp-server
+            newTag: ${{ steps.docker_build.outputs.digest }}
+          EOF
+          ytt -f manifests
