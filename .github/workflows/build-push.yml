@@ -70,6 +70,6 @@ jobs:
           cat manifests/kustomization.yaml
           git config --global user.name "github-actions[bot]"
           git config --global user.email github-actions@github.com
-          git add -A
+          git add manifests/kustomization.yaml
           git commit -m "update image tag"
           git push 
