@@ -20,10 +20,11 @@ RUN go build -a -o udp-server
 
 # Use distroless as minimal base image to package the manager binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
-FROM gcr.io/distroless/static:nonroot
+FROM gcr.io/distroless/base-debian10
 WORKDIR /
-COPY --from=builder /workspace/udp-server .
+COPY --from=builder /workspace/udp-server /udp-server
+EXPOSE 8080
+
 USER nonroot:nonroot
-#EXPOSE 8080
 
 ENTRYPOINT ["/udp-server"]
